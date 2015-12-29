@@ -45,3 +45,5 @@ Temporary Items
 *.cache
 *.dll
 *.txt
+*.exe
+ContentProvider.suo

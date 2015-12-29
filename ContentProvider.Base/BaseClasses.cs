@@ -25,12 +25,12 @@ namespace ContentProvider.Lib
             return Name + "\t" + SiteLink;
         }
     }
-    public struct Show
+    public struct ShowContents
     {
         public string Name { get; private set; }
         public Episode[] Episodes { get; private set; }
 
-        public Show(string name, Episode[] episodes)
+        public ShowContents(string name, Episode[] episodes)
             : this()
         {
             Name = name;
@@ -44,13 +44,13 @@ namespace ContentProvider.Lib
             return result;
         }
     }
-    public struct ShowLink
+    public struct ShowInfo
     {
         public string Name { get; private set; }
         public string SiteLink { get; private set; }
         public string ImgLink { get; private set; }
 
-        public ShowLink(string name, string link, string img)
+        public ShowInfo(string name, string link, string img)
             : this()
         {
             Name = name;
@@ -98,8 +98,8 @@ namespace ContentProvider.Lib
             Client = new WebClient();
             Client.Encoding = Encoding.UTF8;
         }
-        public abstract ShowLink[] Browse(string type, int page);
-        public abstract Show GetContentList(string rPath);
+        public abstract ShowInfo[] Browse(string type, int page);
+        public abstract ShowContents GetContentList(string rPath);
         public abstract Link[] GetContentLink(string rPath);
         public abstract string Request(string reqPath, NameValueCollection query);
 

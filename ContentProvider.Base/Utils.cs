@@ -9,10 +9,9 @@ namespace ContentProvider.Lib
     {
         public static string ExtractString(string text, string start, string end, int textIndex)
         {
-            if (textIndex >= text.Length) return null;
+            if (textIndex >= text.Length || textIndex == -1) return null;
             int startIndex = text.IndexOf(start, textIndex) + start.Length;
-            if (startIndex >= text.Length) return null;
-            //int endIndex = text.IndexOf(end, textIndex);
+            if (startIndex >= text.Length || textIndex == -1) return null;
             int endIndex = text.IndexOf(end, startIndex);
             if (startIndex == start.Length - 1 || endIndex == -1) return null;
             string result = text.Substring(startIndex, endIndex - startIndex);
