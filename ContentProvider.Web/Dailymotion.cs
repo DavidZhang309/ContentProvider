@@ -46,7 +46,8 @@ namespace ContentProvider.Web
         public override Link[] GetContentLink(string rPath)
         {
             string html;
-            if (!TryDownloadString(Host + rPath, out html)) return new Link[0];
+            if (rPath.StartsWith("/")) rPath = Host + rPath;
+            if (!TryDownloadString(rPath, out html)) return new Link[0];
 
             int baseIndex = html.IndexOf("qualities");
 
@@ -58,11 +59,6 @@ namespace ContentProvider.Web
                 if (url != null) break; //if a quality is found, stop
             }
             return url == null ? new Link[0] : new Link[] { new Link(MediaType.Video, url.Replace("\\/", "/")) };
-        }
-
-        public override string Request(string reqPath, System.Collections.Specialized.NameValueCollection query)
-        {
-            throw new NotImplementedException();
         }
     }
 }

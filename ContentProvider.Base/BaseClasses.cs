@@ -3,9 +3,6 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
-//using HttpDOMLoader;
-//using System.Threading;
-
 namespace ContentProvider.Lib
 {
     public struct Episode
@@ -64,6 +61,24 @@ namespace ContentProvider.Lib
         }
     }
 
+    public struct LinkGroup
+    {
+        public string Metadata { get; private set; }
+        public string[] Links { get; private set; }
+
+        public LinkGroup(string metadata, string[] links)
+            : this()
+        {
+            Metadata = metadata;
+            Links = links;
+        }
+
+        public override string ToString()
+        {
+            return Metadata + "\n" + string.Join("\n", Links);
+        }
+    }
+
     public enum MediaType { Image, Video, Audio, Other, Subtitle }
     public struct Link
     {
@@ -85,15 +100,11 @@ namespace ContentProvider.Lib
 
     public abstract class BaseCDNModule
     {
-        public static string DOMHOST;
-
-        public bool UseHttpDOM { get; set; }
         public string Name { get; protected set; }
         protected WebClient Client { get; set; }
 
         public BaseCDNModule(string name)
         {
-            UseHttpDOM = true;
             Name = name;
             Client = new WebClient();
             Client.Encoding = Encoding.UTF8;
@@ -101,7 +112,7 @@ namespace ContentProvider.Lib
         public abstract ShowInfo[] Browse(string type, int page);
         public abstract ShowContents GetContentList(string rPath);
         public abstract Link[] GetContentLink(string rPath);
-        public abstract string Request(string reqPath, NameValueCollection query);
+        
 
         protected bool TryDownloadString(string url, out string html)
         {
@@ -116,10 +127,7 @@ namespace ContentProvider.Lib
                 return false;
             }
         }
-        protected bool TryDownloadDOM(string url, out string html)
-        {
-            return TryDownloadString(DOMHOST + "domget?url=" + url, out html);
-        }
+        
 
         public override string ToString()
         {

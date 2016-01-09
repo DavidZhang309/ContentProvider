@@ -17,6 +17,7 @@ namespace ContentProvider.CLI
 
             Dictionary<string, BaseCDNModule> modules = new Dictionary<string, BaseCDNModule>();
             modules.Add("dailymotion", new DailymotionModule("dailymotion"));
+            modules.Add("youtube", new YoutubeModule("youtube"));
             //TODO: Add more modules here
             
             //Commands (TODO: package this better than anonymous functions)
