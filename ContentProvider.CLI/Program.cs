@@ -12,12 +12,14 @@ namespace ContentProvider.CLI
     {
         static void Main(string[] args)
         {
+            //Console.OutputEncoding = System.Text.Encoding.Unicode;
             CommandConsole console = new CommandConsole() { Prefix = "", PrintTimestamp = false, VerboseLevel = VerboseTag.Info};
             bool running = true;
 
             Dictionary<string, BaseCDNModule> modules = new Dictionary<string, BaseCDNModule>();
             modules.Add("dailymotion", new DailymotionModule("dailymotion"));
             modules.Add("youtube", new YoutubeModule("youtube"));
+            modules.Add("vimeo", new ScriptedProvider("vimeo", "Modules\\vimeo.lua"));
             //TODO: Add more modules here
             
             //Commands (TODO: package this better than anonymous functions)
@@ -25,6 +27,7 @@ namespace ContentProvider.CLI
                 {
                     running = false;
                 })));
+            //console.RegisterCommand("exec", 
             console.RegisterCommand("help", new EventCommand(new Action<object, EventCmdArgs>((sender, eventArgs) =>
             {
                 console.Print("List of functions:\n    ->" + string.Join("\n    ->", console.GetCommandList()));
@@ -33,7 +36,30 @@ namespace ContentProvider.CLI
             {
                 console.Print("Modules:\n    ->" + string.Join("\n    ->", modules.Keys.ToArray()));
             })));
-
+            console.RegisterCommand("load_module", new EventCommand(new Action<object, EventCmdArgs>((sender, eventArgs) =>
+            {
+                if (eventArgs.Arguments.Length == 2)
+                {
+                    modules.Add(eventArgs.Arguments[0], new ScriptedProvider(eventArgs.Arguments[0], eventArgs.Arguments[1]));
+                }
+                else
+                {
+                    console.Print("Usage: load_module [name] [module_file]");
+                }
+            })));
+            console.RegisterCommand("reload_module", new EventCommand(new Action<object, EventCmdArgs>((sender, eventArgs) =>
+            {
+                if (eventArgs.Arguments.Length == 1)
+                {
+                    ScriptedProvider module = modules[eventArgs.Arguments[0]] as ScriptedProvider;
+                    if (module != null)
+                        module.Reload();
+                }
+                else
+                {
+                    console.Print("Usage: reload_module [module]");
+                }
+            })));
             console.RegisterCommand("browse", new EventCommand(new Action<object, EventCmdArgs>((sender, eventArgs) =>
             {
                 if (eventArgs.Arguments.Length == 3)

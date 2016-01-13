@@ -47,3 +47,7 @@ Temporary Items
 *.txt
 *.exe
 ContentProvider.suo
+ContentProvider.Base/bin/
+ContentProvider.CLI/bin/
+ContentProvider.Web/bin/
+CoreFramework/

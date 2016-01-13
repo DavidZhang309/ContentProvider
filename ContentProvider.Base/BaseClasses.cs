@@ -110,8 +110,8 @@ namespace ContentProvider.Lib
             Client.Encoding = Encoding.UTF8;
         }
         public abstract ShowInfo[] Browse(string type, int page);
-        public abstract ShowContents GetContentList(string rPath);
-        public abstract Link[] GetContentLink(string rPath);
+        public abstract ShowContents GetContentList(string link);
+        public abstract Link[] GetContentLink(string link);
         
 
         protected bool TryDownloadString(string url, out string html)

@@ -29,24 +29,24 @@ namespace ContentProvider.Lib
             return links.ToArray();
         }
 
-        public override ShowContents GetContentList(string rPath)
+        public override ShowContents GetContentList(string link)
         {
             string html;
-            if (!TryDownloadString("http://youtube.com/" + rPath, out html))
+            if (!TryDownloadString(link, out html))
                 return new ShowContents();
-            if (rPath.StartsWith("watch"))
+            if (link.StartsWith("watch"))
             {
                 string title = StrUtils.ExtractString(html, "<title>", "<", 0);
-                return new ShowContents(title, new Episode[] { new Episode(title, rPath) });
+                return new ShowContents(title, new Episode[] { new Episode(title, link) });
             }
             else
                 return new ShowContents();
         }
 
-        public override Link[] GetContentLink(string rPath)
+        public override Link[] GetContentLink(string link)
         {
             string webData;
-            if (!TryDownloadString("https://www.youtube.com/" + rPath, out webData)) return new Link[0];
+            if (!TryDownloadString(link, out webData)) return new Link[0];
             string dashLink = StrUtils.ExtractString(webData, "dashmpd\":\"", "\"", 0).Replace("\\/", "/");
             if (!TryDownloadString(dashLink, out webData)) return new Link[0];
             //webData = System.IO.File.ReadAllText(".\\dash.xml");
@@ -54,8 +54,8 @@ namespace ContentProvider.Lib
             List<Link> links = new List<Link>();
             while (currentIndex != -1)
             {
-                string link = "http" + StrUtils.ExtractString(webData, "http", "<", currentIndex).Replace("&amp;", "&");
-                links.Add(new Link(MediaType.Video, link));
+                string contentLink = "http" + StrUtils.ExtractString(webData, "http", "<", currentIndex).Replace("&amp;", "&");
+                links.Add(new Link(MediaType.Video, contentLink));
                 currentIndex = webData.IndexOf("<Representation id", currentIndex + 1);
             }
             return links.ToArray();

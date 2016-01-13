@@ -33,7 +33,7 @@ namespace ContentProvider.Web
         /// </summary>
         /// <param name="rPath"></param>
         /// <returns></returns>
-        public override ShowContents GetContentList(string rPath)
+        public override ShowContents GetContentList(string link)
         {
             throw new NotImplementedException();
         }
@@ -41,13 +41,13 @@ namespace ContentProvider.Web
         /// <summary>
         /// From webpage, grabs highest quality availiable link
         /// </summary>
-        /// <param name="rPath">the link path to video page</param>
+        /// <param name="link">the link path to video page</param>
         /// <returns>list of links</returns>
-        public override Link[] GetContentLink(string rPath)
+        public override Link[] GetContentLink(string link)
         {
             string html;
-            if (rPath.StartsWith("/")) rPath = Host + rPath;
-            if (!TryDownloadString(rPath, out html)) return new Link[0];
+            if (link.StartsWith("/")) link = Host + link;
+            if (!TryDownloadString(link, out html)) return new Link[0];
 
             int baseIndex = html.IndexOf("qualities");
 
