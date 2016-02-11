@@ -105,10 +105,6 @@
       <Project>{0A58F41E-78FE-4BBB-A423-3732496FC4BF}</Project>
       <Name>ContentProvider.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ContentProvider.CLI\ContentProvider.CLI.csproj">
-      <Project>{3D02478C-9F2A-4CEB-B792-D2FEED1FD9A9}</Project>
-      <Name>ContentProvider.CLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ContentProvider.Web\ContentProvider.Web.csproj">
       <Project>{8E8DBDB1-5FAD-4C9C-9E6D-12EF60C2034C}</Project>
       <Name>ContentProvider.Web</Name>
