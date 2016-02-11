@@ -17,9 +17,11 @@ namespace ContentProvider.CLI
             bool running = true;
 
             Dictionary<string, BaseCDNModule> modules = new Dictionary<string, BaseCDNModule>();
+            LinkedList<ScriptedProvider> dynModules = new LinkedList<ScriptedProvider>();
             modules.Add("dailymotion", new DailymotionModule("dailymotion"));
             modules.Add("youtube", new YoutubeModule("youtube"));
             modules.Add("vimeo", new ScriptedProvider("vimeo", "Modules\\vimeo.lua"));
+            dynModules.AddLast((ScriptedProvider)modules["vimeo"]);
             //TODO: Add more modules here
             
             //Commands (TODO: package this better than anonymous functions)
@@ -94,6 +96,19 @@ namespace ContentProvider.CLI
                     console.Print("Usage: get_link [module] [relative_path]");
                 }
             })));
+
+            EventCommandValue val = new EventCommandValue() { Value = "0" };
+            val.OnValueChange += new EventHandler<ValueArgs>((sender, eventArgs) =>
+            {
+                foreach (ScriptedProvider module in dynModules)
+                    if (eventArgs.NewValue == "1")
+                        module.AssertErrors = true;
+                    else if (eventArgs.NewValue == "0")
+                        module.AssertErrors = false;
+                    else
+                        break;
+            });
+            console.RegisterCommand("debug_module", val);
 
             //Runs the CLI arguments if there are any arguments, else the console goes into interactive mode
             if (args.Length != 0)

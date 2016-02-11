@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentProvider.CLI", "Cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreFramework", "CoreFramework\CoreFramework.csproj", "{3677ABAB-BF98-44D9-A05C-CB1D0FF28806}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentProvider.UI.Winforms", "ContentProvider.UI.Winforms\ContentProvider.UI.Winforms.csproj", "{40165469-1F43-44EA-95F8-0F554B7F2221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,16 @@ Global
 		{3677ABAB-BF98-44D9-A05C-CB1D0FF28806}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3677ABAB-BF98-44D9-A05C-CB1D0FF28806}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3677ABAB-BF98-44D9-A05C-CB1D0FF28806}.Release|x86.ActiveCfg = Release|Any CPU
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Debug|x86.ActiveCfg = Debug|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Debug|x86.Build.0 = Debug|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Release|Any CPU.ActiveCfg = Release|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Release|Mixed Platforms.Build.0 = Release|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Release|x86.ActiveCfg = Release|x86
+		{40165469-1F43-44EA-95F8-0F554B7F2221}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

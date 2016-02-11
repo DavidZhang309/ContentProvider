@@ -54,6 +54,12 @@
     </Content>
     <Content Include="NLua.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreFramework\CoreFramework.csproj">
+      <Project>{3677ABAB-BF98-44D9-A05C-CB1D0FF28806}</Project>
+      <Name>CoreFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

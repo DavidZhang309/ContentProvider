@@ -2,6 +2,7 @@
 using System.Reflection;
 using NLua;
 
+using CoreFramework;
 //using CoreFramework.Scripting.Lua;
 
 namespace ContentProvider.Lib
@@ -87,7 +88,6 @@ namespace ContentProvider.Lib
         time = os.time }}
     }}";
         #endregion
-        //private const string BUILDSANDBOX = @"{0} = _ENV";
 
         private const string SANDBOXTABLENAME = "SB";
         private const string MODULETABLENAME = "MOD";
@@ -96,8 +96,9 @@ namespace ContentProvider.Lib
         
         protected NLua.Lua Interpreter { get; private set; }
 
-        protected LuaTable DefaultGlobal { get; private set; }
         protected LuaTable SBEnviroment { get; private set; }
+
+        public bool AssertErrors { get; set; }
 
         public ScriptedProvider(string name, string modulePath)
             : base(name)
@@ -165,7 +166,6 @@ namespace ContentProvider.Lib
         public void Reload()
         {
             Interpreter = new Lua();
-            DefaultGlobal = (LuaTable)Interpreter["_ENV"]; //save global
             Interpreter.NewTable(SANDBOXTABLENAME); //create sandboxed enviroment
             SBEnviroment = (LuaTable)Interpreter[SANDBOXTABLENAME];
             Interpreter.DoString(string.Format(BUILDSANDBOX, SANDBOXTABLENAME), "Building Sandbox");//sandboxing
@@ -184,16 +184,22 @@ namespace ContentProvider.Lib
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException);
+                if (AssertErrors)
+                {
+                    Console.WriteLine(ex.InnerException);
+                    Console.WriteLine(ex.StackTrace);
+                }
                 return null;
             }
         }
 
         public override ShowInfo[] Browse(string type, int page)
         {
-            //object[] result = Interpreter.DoString(string.Format(SANDBOXSCRIPT, "Browse", "\"" + type + "\", " + page), "Browse");
             object[] result = Execute(MODULETABLENAME + ".Browse", "\"" + type + "\", " + page);
+            if (result == null) return new ShowInfo[0]; //if no returns
             LuaTable table = result[0] as LuaTable;
+            if (table == null) return new ShowInfo[0]; //if invalid return
+
             ShowInfo[] listings = new ShowInfo[table.Values.Count];
             int i = 0;
             foreach (object info in table.Values)
@@ -203,15 +209,17 @@ namespace ContentProvider.Lib
         }
         public override ShowContents GetContentList(string link)
         {
-            //object[] result = Interpreter.DoString(string.Format(SANDBOXSCRIPT, "GetList", "\"" + link + "\""), "GetList");
             object[] result = Execute(MODULETABLENAME + ".GetList", "\"" + link + "\"");
+            if (result == null) return new ShowContents("", new Episode[0]);
             return (ShowContents)result[0];
         }
         public override Link[] GetContentLink(string link)
         {
-            //object[] result = Interpreter.DoString(string.Format(SANDBOXSCRIPT, "GetLink", "\"" + link + "\""), "GetLink");
             object[] result = Execute(MODULETABLENAME + ".GetLink", "\"" + link + "\"");
+            if (result == null) return new Link[0]; //if no returns
             LuaTable table = result[0] as LuaTable;
+            if (table == null) return new Link[0]; //if invalid return
+
             Link[] listings = new Link[table.Values.Count];
             int i = 0;
             foreach (object info in table.Values)
