@@ -39,15 +39,15 @@ namespace ContentProvider.UI.Winforms
         private void NextBrowse()
         {
             BaseCDNModule module = moduleCombo.SelectedItem as BaseCDNModule;
-            ShowInfo[] links = module.Browse(searchBox.Text, currentPage);
-            foreach (ShowInfo link in links)
-                browseBox.Items.Add(new ShowLinkBinding(link));
+            ContentSeriesInfo[] links = module.Browse(searchBox.Text, currentPage);
+            foreach (ContentSeriesInfo link in links)
+                browseBox.Items.Add(new SeriesInfoBinding(link));
         }
-        private void ChangeListing(ShowContents show)
+        private void ChangeListing(ContentSeries show)
         {
             listingBox.Items.Clear();
-            foreach (Episode episode in show.Episodes)
-                listingBox.Items.Add(new EpisodeBinding(episode));
+            foreach (SeriesInstallment episode in show.Installments)
+                listingBox.Items.Add(new InstallmentBinding(episode));
         }
 
         private void searchButton_Click(object sender, EventArgs e)
@@ -72,7 +72,7 @@ namespace ContentProvider.UI.Winforms
             else
             {
                 System.Console.WriteLine(browseBox.SelectedItem.GetType());
-                ShowInfo link = ((ShowLinkBinding)browseBox.SelectedItem).Show;
+                ContentSeriesInfo link = ((SeriesInfoBinding)browseBox.SelectedItem).Show;
                 BaseCDNModule module = moduleCombo.SelectedItem as BaseCDNModule;
 
                 titleLabel.Text = link.Name;
@@ -81,19 +81,19 @@ namespace ContentProvider.UI.Winforms
                 coverPicture.Image = new Bitmap(stream);
                 stream.Close();
                 //change listings
-                ChangeListing(module.GetContentList(link.SiteLink));
+                ChangeListing(module.GetContentList(link.Link));
             }
         }
         private void listingBox_DoubleClick(object sender, EventArgs e)
         {
             if (listingBox.SelectedIndex == -1) return;
             BaseCDNModule module = moduleCombo.SelectedItem as BaseCDNModule;
-            Episode ep = ((EpisodeBinding)listingBox.SelectedItem).Episode;
-            Link[] links = module.GetContentLink(ep.SiteLink);
+            SeriesInstallment ep = ((InstallmentBinding)listingBox.SelectedItem).Episode;
+            ContentResource[] links = module.GetContentLink(ep.SiteLink);
 
             mediaTitleLabel.Text = ep.Name;
             linkBox.Items.Clear();
-            foreach (Link link in links)
+            foreach (ContentResource link in links)
                 linkBox.Items.Add(link);
             pics = new Bitmap[links.Length];
             tabControl1.SelectedIndex = 1;
@@ -102,7 +102,7 @@ namespace ContentProvider.UI.Winforms
         private void linkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (linkBox.SelectedIndex == -1) return;
-            Link link = (Link)linkBox.SelectedItem;
+            ContentResource link = (ContentResource)linkBox.SelectedItem;
 
             if (link.Media == MediaType.Video || link.Media == MediaType.Audio)
             {
@@ -111,7 +111,7 @@ namespace ContentProvider.UI.Winforms
                     axWindowsMediaPlayer1.Visible = true;
                     picBox.Visible = false;
                 }
-                axWindowsMediaPlayer1.URL = link.LinkString;
+                axWindowsMediaPlayer1.URL = link.Link;
                 return;
             }
 
@@ -123,7 +123,7 @@ namespace ContentProvider.UI.Winforms
             if (pics[linkBox.SelectedIndex] == null)
             {
                 
-                Stream iStream = client.OpenRead(link.LinkString);
+                Stream iStream = client.OpenRead(link.Link);
                 Bitmap image = new Bitmap(iStream);
                 iStream.Close();
                 pics[linkBox.SelectedIndex] = image;
@@ -139,7 +139,7 @@ namespace ContentProvider.UI.Winforms
         private void manualButton_Click(object sender, EventArgs e)
         {
             BaseCDNModule module = moduleCombo.SelectedItem as BaseCDNModule;
-            ContentProvider.Lib.ShowContents show = module.GetContentList(manualBox.Text);
+            ContentSeries show = module.GetContentList(manualBox.Text);
 
             ChangeListing(show);
         }
@@ -153,8 +153,8 @@ namespace ContentProvider.UI.Winforms
         private void downloadButton_Click(object sender, EventArgs e)
         {
             if (linkBox.SelectedIndex == -1) return;
-            Link ep = (Link)linkBox.SelectedItem;
-            Uri url = new Uri(ep.LinkString);
+            ContentResource ep = (ContentResource)linkBox.SelectedItem;
+            Uri url = new Uri(ep.Link);
             string ext = Path.GetExtension(url.AbsolutePath);
             saveDialog.FileName = mediaTitleLabel.Text + ext;
             DialogResult result = saveDialog.ShowDialog();

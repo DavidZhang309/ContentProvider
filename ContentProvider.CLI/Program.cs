@@ -66,7 +66,7 @@ namespace ContentProvider.CLI
             {
                 if (eventArgs.Arguments.Length == 3)
                 {
-                    console.Print(string.Join("\n", modules[eventArgs.Arguments[0]].Browse(eventArgs.Arguments[1], Convert.ToInt32(eventArgs.Arguments[2]))));
+                    console.Print(string.Join("\n", modules[eventArgs.Arguments[0]].Browse(eventArgs.Arguments[1], Convert.ToInt32(eventArgs.Arguments[2])).GetEnumerator()));
                 }
                 else
                 {
@@ -77,8 +77,8 @@ namespace ContentProvider.CLI
             {
                 if (eventArgs.Arguments.Length == 2)
                 {
-                    ShowContents show = modules[eventArgs.Arguments[0]].GetContentList(eventArgs.Arguments[1]);
-                    console.Print(show.Name + "\n" + string.Join("\n", show.Episodes));
+                    ContentSeries show = modules[eventArgs.Arguments[0]].GetContentList(eventArgs.Arguments[1]);
+                    console.Print(show.Name + "\n" + string.Join("\n", show.Installments.GetEnumerator()));
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace ContentProvider.CLI
             {
                 if (eventArgs.Arguments.Length == 2)
                 {
-                    console.Print(string.Join("\n", modules[eventArgs.Arguments[0]].GetContentLink(eventArgs.Arguments[1])));
+                    console.Print(string.Join("\n", modules[eventArgs.Arguments[0]].GetContentLink(eventArgs.Arguments[1]).GetEnumerator()));
                 }
                 else
                 {

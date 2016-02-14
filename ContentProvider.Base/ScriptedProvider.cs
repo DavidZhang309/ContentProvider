@@ -122,10 +122,10 @@ namespace ContentProvider.Lib
             AddToLib("string.extract", null, typeof(StrUtils).GetMethod("ExtractString"));
             AddToLib("downloadString", Client, Client.GetType().GetMethod("DownloadString", new Type[] { typeof(string) }));
             Interpreter.NewTable(SANDBOXTABLENAME + ".data");
-            AddToLib("data.createShowInfo", this, thisType.GetMethod("CreateShowInfo", BindingFlags.NonPublic | BindingFlags.Instance));
-            AddToLib("data.createEpisode", this, thisType.GetMethod("CreateEpisode", BindingFlags.NonPublic | BindingFlags.Instance));
-            AddToLib("data.createShowContents", this, thisType.GetMethod("CreateShowContents", BindingFlags.NonPublic | BindingFlags.Instance));
-            AddToLib("data.createLink", this, thisType.GetMethod("CreateLink", BindingFlags.NonPublic | BindingFlags.Instance));
+            AddToLib("data.createSeriesInfo", this, thisType.GetMethod("CreateSeriesInfo", BindingFlags.NonPublic | BindingFlags.Instance));
+            AddToLib("data.createInstallment", this, thisType.GetMethod("CreateInstallment", BindingFlags.NonPublic | BindingFlags.Instance));
+            AddToLib("data.createSeries", this, thisType.GetMethod("CreateSeries", BindingFlags.NonPublic | BindingFlags.Instance));
+            AddToLib("data.createResource", this, thisType.GetMethod("CreateResource", BindingFlags.NonPublic | BindingFlags.Instance));
         }
 
         private int IndexOf(string str, string search, int startIndex)
@@ -142,25 +142,25 @@ namespace ContentProvider.Lib
         }
 
         //factory
-        private ShowInfo CreateShowInfo(string name, string link, string img)
+        private ContentSeriesInfo CreateSeriesInfo(string name, string link, string img)
         {
-            return new ShowInfo(name, link, img);
+            return new ContentSeriesInfo(name, link, img);
         }
-        private Episode CreateEpisode(string name, string link)
+        private SeriesInstallment CreateInstallment(string name, string link)
         {
-            return new Episode(name, link);
+            return new SeriesInstallment(name, link);
         }
-        private ShowContents CreateShowContents(string name, LuaTable table)
+        private ContentSeries CreateSeries(string name, LuaTable table)
         {
-            Episode[] episodes = new Episode[table.Values.Count];
+            SeriesInstallment[] episodes = new SeriesInstallment[table.Values.Count];
             int i = 0;
             foreach (object ep in table.Values)
-                episodes[i++] = (Episode)ep;
-            return new ShowContents(name, episodes);
+                episodes[i++] = (SeriesInstallment)ep;
+            return new ContentSeries(name, episodes);
         }
-        private Link CreateLink(string mediaType, string link)
+        private ContentResource CreateResource(string mediaType, string link)
         {
-            return new Link((MediaType)Enum.Parse(typeof(MediaType), mediaType), link);
+            return new ContentResource((MediaType)Enum.Parse(typeof(MediaType), mediaType), link);
         }
 
         public void Reload()
@@ -193,37 +193,37 @@ namespace ContentProvider.Lib
             }
         }
 
-        public override ShowInfo[] Browse(string type, int page)
+        public override ContentSeriesInfo[] Browse(string type, int page)
         {
             object[] result = Execute(MODULETABLENAME + ".Browse", "\"" + type + "\", " + page);
-            if (result == null) return new ShowInfo[0]; //if no returns
+            if (result == null) return new ContentSeriesInfo[0]; //if no returns
             LuaTable table = result[0] as LuaTable;
-            if (table == null) return new ShowInfo[0]; //if invalid return
+            if (table == null) return new ContentSeriesInfo[0]; //if invalid return
 
-            ShowInfo[] listings = new ShowInfo[table.Values.Count];
+            ContentSeriesInfo[] listings = new ContentSeriesInfo[table.Values.Count];
             int i = 0;
             foreach (object info in table.Values)
-                listings[i++] = (ShowInfo)info;
+                listings[i++] = (ContentSeriesInfo)info;
 
             return listings;
         }
-        public override ShowContents GetContentList(string link)
+        public override ContentSeries GetContentList(string link)
         {
             object[] result = Execute(MODULETABLENAME + ".GetList", "\"" + link + "\"");
-            if (result == null) return new ShowContents("", new Episode[0]);
-            return (ShowContents)result[0];
+            if (result == null) return new ContentSeries("", new SeriesInstallment[0]);
+            return (ContentSeries)result[0];
         }
-        public override Link[] GetContentLink(string link)
+        public override ContentResource[] GetContentLink(string link)
         {
             object[] result = Execute(MODULETABLENAME + ".GetLink", "\"" + link + "\"");
-            if (result == null) return new Link[0]; //if no returns
+            if (result == null) return new ContentResource[0]; //if no returns
             LuaTable table = result[0] as LuaTable;
-            if (table == null) return new Link[0]; //if invalid return
+            if (table == null) return new ContentResource[0]; //if invalid return
 
-            Link[] listings = new Link[table.Values.Count];
+            ContentResource[] listings = new ContentResource[table.Values.Count];
             int i = 0;
             foreach (object info in table.Values)
-                listings[i++] = (Link)info;
+                listings[i++] = (ContentResource)info;
 
             return listings;
         }

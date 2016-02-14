@@ -12,50 +12,50 @@ namespace ContentProvider.Lib
             : base(name)
         { }
 
-        public override ShowInfo[] Browse(string type, int page)
+        public override ContentSeriesInfo[] Browse(string type, int page)
         {
             type = Uri.EscapeDataString(type.Replace(' ', '+'));
             string html = Client.DownloadString(string.Format("http://youtube.com/results?search_query={0}&page={1}", type, page));
-            List<ShowInfo> links = new List<ShowInfo>();
+            List<ContentSeriesInfo> links = new List<ContentSeriesInfo>();
 
             int currentIndex = html.IndexOf("class=\"section-list\">");
             while (currentIndex != -1)
             {
                 string title = StrUtils.ExtractString(html, "dir=\"ltr\">", "</a><span", currentIndex);
                 string link = StrUtils.ExtractString(html, "<a href=\"/", "\"", currentIndex);
-                links.Add(new ShowInfo(title, link, "i.ytimg.com/vi/" + link.Substring(link.IndexOf('=') + 1) + "/mqdefault.jpg"));
+                links.Add(new ContentSeriesInfo(title, link, "i.ytimg.com/vi/" + link.Substring(link.IndexOf('=') + 1) + "/mqdefault.jpg"));
                 currentIndex = html.IndexOf("<button class=\"yt-uix-button yt-uix-button-size-small yt-uix-button-default yt-uix-button-empty yt-uix-button-has-icon no-icon-markup addto-button video-actions spf-nolink hide-until-delayloaded addto-watch-later-button-sign-in yt-uix-tooltip\"", html.IndexOf(link, currentIndex));
             }
             return links.ToArray();
         }
 
-        public override ShowContents GetContentList(string link)
+        public override ContentSeries GetContentList(string link)
         {
             string html;
             if (!TryDownloadString(link, out html))
-                return new ShowContents();
+                return new ContentSeries("None", new SeriesInstallment[0]);
             if (link.StartsWith("watch"))
             {
                 string title = StrUtils.ExtractString(html, "<title>", "<", 0);
-                return new ShowContents(title, new Episode[] { new Episode(title, link) });
+                return new ContentSeries(title, new SeriesInstallment[] { new SeriesInstallment(title, link) });
             }
             else
-                return new ShowContents();
+                return new ContentSeries("None", new SeriesInstallment[0]);
         }
 
-        public override Link[] GetContentLink(string link)
+        public override ContentResource[] GetContentLink(string link)
         {
             string webData;
-            if (!TryDownloadString(link, out webData)) return new Link[0];
+            if (!TryDownloadString(link, out webData)) return new ContentResource[0];
             string dashLink = StrUtils.ExtractString(webData, "dashmpd\":\"", "\"", 0).Replace("\\/", "/");
-            if (!TryDownloadString(dashLink, out webData)) return new Link[0];
+            if (!TryDownloadString(dashLink, out webData)) return new ContentResource[0];
             //webData = System.IO.File.ReadAllText(".\\dash.xml");
             int currentIndex = webData.IndexOf("<Representation id");
-            List<Link> links = new List<Link>();
+            List<ContentResource> links = new List<ContentResource>();
             while (currentIndex != -1)
             {
                 string contentLink = "http" + StrUtils.ExtractString(webData, "http", "<", currentIndex).Replace("&amp;", "&");
-                links.Add(new Link(MediaType.Video, contentLink));
+                links.Add(new ContentResource(MediaType.Video, contentLink));
                 currentIndex = webData.IndexOf("<Representation id", currentIndex + 1);
             }
             return links.ToArray();

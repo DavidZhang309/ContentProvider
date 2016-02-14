@@ -9,11 +9,11 @@ using ContentProvider.Lib;
 
 namespace ContentProvider.UI.Winforms
 {
-    public struct ShowLinkBinding
+    public struct SeriesInfoBinding
     {
-        public ShowInfo Show { get; private set; }
+        public ContentSeriesInfo Show { get; private set; }
 
-        public ShowLinkBinding(ShowInfo show)
+        public SeriesInfoBinding(ContentSeriesInfo show)
             : this()
         {
             Show = show;
@@ -25,11 +25,11 @@ namespace ContentProvider.UI.Winforms
         }
     }
 
-    public struct ShowBinding
+    public struct SeriesBinding
     {
-        public ShowContents Show { get; private set; }
+        public ContentSeries Show { get; private set; }
 
-        public ShowBinding(ShowContents show)
+        public SeriesBinding(ContentSeries show)
             : this()
         {
             Show = show;
@@ -41,11 +41,11 @@ namespace ContentProvider.UI.Winforms
         }
     }
 
-    public struct EpisodeBinding
+    public struct InstallmentBinding
     {
-        public Episode Episode { get; private set; }
+        public SeriesInstallment Episode { get; private set; }
 
-        public EpisodeBinding(Episode episode)
+        public InstallmentBinding(SeriesInstallment episode)
             : this()
         {
             Episode = episode;

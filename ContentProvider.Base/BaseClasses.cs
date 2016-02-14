@@ -1,102 +1,134 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
 namespace ContentProvider.Lib
 {
-    public struct Episode
+    public abstract class BaseDataContainer
     {
-        public string Name { get; private set; }
-        public string SiteLink { get; private set; }
+        protected NameValueCollection Metadata { get; set; }
 
-        public Episode(string name, string link)
-            : this()
+        public BaseDataContainer()
         {
-            Name = name;
-            SiteLink = link;
+            Metadata = new NameValueCollection();
+        }
+        public BaseDataContainer(NameValueCollection metadata)
+        {
+            Metadata = metadata;
         }
 
-        public override string ToString()
+        private string ToString(string delimiter, string format)
         {
-            return Name + "\t" + SiteLink;
+            string[] tags = format.Split(',');
+            string[] result = new string[tags.Length];
+
+            for (int i = 0; i < tags.Length; i++)
+                result[i] = Metadata.Get(tags[i]);
+            return string.Join(delimiter, result);
+        }
+
+        public string ToCSV(string format)
+        {
+            return ToString(",", format);
+        }
+        public string ToTSV(string format)
+        {
+            return ToString("\t", format);
         }
     }
-    public struct ShowContents
-    {
-        public string Name { get; private set; }
-        public Episode[] Episodes { get; private set; }
 
-        public ShowContents(string name, Episode[] episodes)
-            : this()
+    public class SeriesInstallment : BaseDataContainer
+    {
+        public string Name
         {
-            Name = name;
-            Episodes = episodes;
+            get { return Metadata.Get("name"); }
+        }
+        public string SiteLink
+        {
+            get { return Metadata.Get("link"); }
+        }
+
+        public SeriesInstallment(string name, string link)
+            : base ()
+        {
+            Metadata.Add("name", name);
+            Metadata.Add("link", link);
+        }
+
+        //tmp, later will be CSV
+        public override string ToString()
+        {
+            return ToTSV("name,link");
+        }
+    }
+    public class ContentSeries : BaseDataContainer
+    {
+        public string Name
+        {
+            get { return Metadata.Get("name"); }
+        }
+        public SeriesInstallment[] Installments
+        {
+            get;
+            private set;
+        }
+
+        public ContentSeries(string name, SeriesInstallment[] installments)
+        {
+            Metadata.Add("name", name);
+            Installments = installments;
         }
 
         public override string ToString()
         {
-            string result = Name + "\n";
-            result += string.Join("\n", Episodes);
+            string result = ToTSV("name") + "\n";
+            result += string.Join("\n", Installments.GetEnumerator());
             return result;
         }
     }
-    public struct ShowInfo
+    public class ContentSeriesInfo : BaseDataContainer
     {
-        public string Name { get; private set; }
-        public string SiteLink { get; private set; }
-        public string ImgLink { get; private set; }
+        public string Name { get { return Metadata.Get("name"); } }
+        public string Link { get { return Metadata.Get("link"); } }
+        public string ImgLink { get { return Metadata.Get("img"); } }
 
-        public ShowInfo(string name, string link, string img)
-            : this()
+        public ContentSeriesInfo(string name, string link, string img)
         {
-            Name = name;
-            SiteLink = link;
-            ImgLink = img;
+            Metadata.Add("name", name);
+            Metadata.Add("link", link);
+            Metadata.Add("img", img);
         }
 
         public override string ToString()
         {
- 	         return Name + "\t" + SiteLink + "\t" + ImgLink;
+            return ToTSV("name,link,img");
         }
     }
-
-    public struct LinkGroup
+    public class ContentResource : BaseDataContainer
     {
-        public string Metadata { get; private set; }
-        public string[] Links { get; private set; }
-
-        public LinkGroup(string metadata, string[] links)
-            : this()
+        public string Link
         {
-            Metadata = metadata;
-            Links = links;
+            get { return Metadata.Get("link"); }
+        }
+        public MediaType Media {
+            get { return (MediaType)Enum.Parse(typeof(MediaType), Metadata.Get("type")); }
+        } 
+
+        public ContentResource(MediaType resourceType, string link)
+        {
+            Metadata.Set("type", resourceType.ToString());
+            Metadata.Set("link", link);
         }
 
         public override string ToString()
         {
-            return Metadata + "\n" + string.Join("\n", Links);
+            return Link;
         }
     }
 
     public enum MediaType { Image, Video, Audio, Other, Subtitle }
-    public struct Link
-    {
-        public MediaType Media { get; private set; }
-        public string LinkString { get; private set; }
-
-        public Link(MediaType type, string link)
-            : this()
-        {
-            Media = type;
-            LinkString = link;
-        }
-
-        public override string ToString()
-        {
-            return LinkString;
-        }
-    }
 
     public abstract class BaseCDNModule
     {
@@ -109,11 +141,10 @@ namespace ContentProvider.Lib
             Client = new WebClient();
             Client.Encoding = Encoding.UTF8;
         }
-        public abstract ShowInfo[] Browse(string type, int page);
-        public abstract ShowContents GetContentList(string link);
-        public abstract Link[] GetContentLink(string link);
+        public abstract ContentSeriesInfo[] Browse(string type, int page);
+        public abstract ContentSeries GetContentList(string link);
+        public abstract ContentResource[] GetContentLink(string link);
         
-
         protected bool TryDownloadString(string url, out string html)
         {
             try
@@ -121,14 +152,13 @@ namespace ContentProvider.Lib
                 html = Client.DownloadString(url);
                 return true;
             }
-            catch (WebException ex)
+            catch (WebException)
             {
                 html = null;
                 return false;
             }
         }
         
-
         public override string ToString()
         {
             return Name + " Module";

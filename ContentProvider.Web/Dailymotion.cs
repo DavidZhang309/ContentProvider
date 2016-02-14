@@ -23,7 +23,7 @@ namespace ContentProvider.Web
         /// <param name="type"></param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public override ShowInfo[] Browse(string type, int page)
+        public override ContentSeriesInfo[] Browse(string type, int page)
         {
             throw new NotImplementedException();
         }
@@ -33,7 +33,7 @@ namespace ContentProvider.Web
         /// </summary>
         /// <param name="rPath"></param>
         /// <returns></returns>
-        public override ShowContents GetContentList(string link)
+        public override ContentSeries GetContentList(string link)
         {
             throw new NotImplementedException();
         }
@@ -43,11 +43,11 @@ namespace ContentProvider.Web
         /// </summary>
         /// <param name="link">the link path to video page</param>
         /// <returns>list of links</returns>
-        public override Link[] GetContentLink(string link)
+        public override ContentResource[] GetContentLink(string link)
         {
             string html;
             if (link.StartsWith("/")) link = Host + link;
-            if (!TryDownloadString(link, out html)) return new Link[0];
+            if (!TryDownloadString(link, out html)) return new ContentResource[0];
 
             int baseIndex = html.IndexOf("qualities");
 
@@ -58,7 +58,7 @@ namespace ContentProvider.Web
                 url = StrUtils.ExtractString(html, "\"url\":\"", "\"", qualityIndex);
                 if (url != null) break; //if a quality is found, stop
             }
-            return url == null ? new Link[0] : new Link[] { new Link(MediaType.Video, url.Replace("\\/", "/")) };
+            return url == null ? new ContentResource[0] : new ContentResource[] { new ContentResource(MediaType.Video, url.Replace("\\/", "/")) };
         }
     }
 }

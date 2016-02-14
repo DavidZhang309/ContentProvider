@@ -51,4 +51,9 @@ ContentProvider.Base/bin/
 ContentProvider.CLI/bin/
 ContentProvider.Web/bin/
 ContentProvider.UI.Winforms/bin/
+ContentProvider.UI.Online/bin/
+ContentProvider.UnitTest/
+TestResults/
 CoreFramework/
+*.vsmdi
+*.testsettings

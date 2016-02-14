@@ -1,0 +1,70 @@
+﻿<html>
+    <style>
+    .master
+    {
+        position: relative;   
+    }
+    .link
+    {
+		color: blue;
+    	text-decoration: underline;
+    	cursor: pointer;
+		font-size: 16px;
+		white-space: nowrap;
+	}
+	.sidebar
+	{
+	    position:relative;
+	    width: 20%;
+	    height: 100%;
+	}
+	.list
+	{
+	    position: relative;
+	}
+    </style>
+    <script>
+    var currentPage = 1;
+
+    function loadModuleList() {
+        var client = new XMLHttpRequest();
+        client.open("GET", "/api/get_modules", false);
+        client.send();
+
+        modules = client.responseText.split("\n");
+        result = "<option value='" + modules[0] + "' selected>" + modules[0] + "</option>\n";
+        for (var i = 1; i < modules.length; i++) {
+            result += "<option value='" + modules[i] + "'>" + modules[i] + "</option>\n";
+        }
+        moduleList.innerHTML = result;
+    }
+
+    function queryModule() {
+        currentPage = 1;
+        var client = new XMLHttpRequest();
+        client.open("GET", "content/" + moduleList.options[moduleList.selectedIndex] + "/browse?query=" + searchText.value + "&page=" + currentPage, false);
+        client.send();
+
+        result = "";
+        items = client.responseText.split("\n");
+        for (var itemIndex = 0; itemIndex < items.length; itemIndex++) {
+            itemData = items[itemIndex].split("\t");
+            result += "<span class='link'>" + itemData[0] + "</span><br>\n";
+        }
+        list.innerHTML = result
+    }
+</script>
+	<head>
+		<title>ContentProvider</title>
+	</head>
+	<body onload='loadModuleList()' class='master'>
+	    <div id= 'browse_sidebar' class='sidebar'>
+            Modules: <select id="moduleList"></select><br>
+            <input id="searchText" type="text" />
+            <button onclick='queryModule()'>Search</button>
+            </div>
+        <div id='list'>
+        Testing
+        </div>
+	</body>
+</html>
